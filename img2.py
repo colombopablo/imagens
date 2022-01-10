@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 
 #URL Hardcodeada para hacerlo mas rapido
 url ="https://www.fortnitecountdown.com/tienda/actual/"
+url_imagen = "https://www.fortnitecountdown.com"
 
 #send get request
 response = requests.get(url)
@@ -16,12 +17,15 @@ for index, image in enumerate(images):
     
     #tomar la extension de la imagen
     image_extension= image_url.split(".")[-1]       
-
-    #get image data
-    image_bytes = requests.get(image_url).content
+    image_url = url_imagen + image_url
     
-    if image_bytes:
-        #write the image data
-        with open(f"Image {index+1}.{image_extension}", "wb") as file:
-            file.write(image_bytes)
-            print(f"Downloading image {index+1}.{image_extension}")
+    if image_url != "cdn-products.eneba.com/":
+
+        #get image data
+        image_bytes = requests.get(image_url).content
+        
+        if image_bytes:
+            #write the image data
+            with open(f"Image {index+1}.{image_extension}", "wb") as file:
+                file.write(image_bytes)
+                print(f"Downloading image {index+1}.{image_extension}")

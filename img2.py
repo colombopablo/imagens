@@ -17,9 +17,10 @@ for index, image in enumerate(images):
     
     #tomar la extension de la imagen
     image_extension= image_url.split(".")[-1]       
-    image_url = url_imagen + image_url
     
     if image_url != "cdn-products.eneba.com/":
+    
+        image_url = url_imagen + image_url
 
         #get image data
         image_bytes = requests.get(image_url).content

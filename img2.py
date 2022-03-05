@@ -1,32 +1,43 @@
+import bs4
 import requests
-from bs4 import BeautifulSoup
+import shutil
+import os
 
-#URL Hardcodeada para hacerlo mas rapido
-url ="https://www.fortnitecountdown.com/tienda/actual/"
-url_imagen = "https://www.fortnitecountdown.com"
+fortnite_imagenes = \
+    'https://universofortnite.com/tienda-de-hoy-en-fortnite/'
 
-#send get request
-response = requests.get(url)
 
-html_page = BeautifulSoup(response.text, 'html.parser')
+def extract():
+    URL_input = fortnite_imagenes 
+    print('Fetching from url =', URL_input)
+    URLdata = requests.get(URL_input)
+    soup = bs4.BeautifulSoup(URLdata.text, "lxml")
+    ImgTags = soup.find_all('img')
+    quantity= len(ImgTags)
+    i = 0
+    print('Please wait..')
+    while i < quantity:
 
-images = html_page.find_all("img")
+        for link in ImgTags:
+            try:
+                images = link.get('src')
+                ext = images[images.rindex('.'):]
+                if ext.startswith('.png'):
+                    ext = '.png'
+                elif ext.startswith('.jpg'):
+                    ext = '.jpg'
+                # elif ext.startswith('.com'):
+                #     ext = '.jpg'
+                # elif ext.startswith('.svg'):
+                #     ext = '.svg'
+                data = requests.get(images, stream=True)
+                filename = str(i) + ext
+                with open(filename, 'wb') as file:
+                    shutil.copyfileobj(data.raw, file)
+                i += 1
+            except:
+                pass
+    print('\t\t\t Downloaded Successfully..\t\t ')
 
-for index, image in enumerate(images):
-    image_url= image.get("src")      #img src value
-    
-    #tomar la extension de la imagen
-    image_extension= image_url.split(".")[-1]       
-    
-    if image_url != "cdn-products.eneba.com/":
-    
-        image_url = url_imagen + image_url
 
-        #get image data
-        image_bytes = requests.get(image_url).content
-        
-        if image_bytes:
-            #write the image data
-            with open(f"Image {index+1}.{image_extension}", "wb") as file:
-                file.write(image_bytes)
-                print(f"Downloading image {index+1}.{image_extension}")
+extract()
